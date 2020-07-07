@@ -1,15 +1,16 @@
 ﻿using Partiality.Modloader;
 using UnityEngine;
 
-namespace ShareStash
+
+namespace Meditation
 {
-    public class ShareStash : PartialityMod
+    public class Meditation : PartialityMod
     {
         public static initializer script;
 
-        public ShareStash()
+        public Meditation()
         {
-            this.ModID = "ShareStash";
+            this.ModID = "Meditation";
             this.Version = "0100";
             this.author = "Savantic";
         }
@@ -19,8 +20,8 @@ namespace ShareStash
             base.OnEnable();
             initializer.mod = this;
             GameObject gameObject = new GameObject();
-            ShareStash.script = gameObject.AddComponent<initializer>();
-            ShareStash.script.Initialize();
+            Meditation.script = gameObject.AddComponent<initializer>();
+            Meditation.script.Initialize();
         }
     }
 

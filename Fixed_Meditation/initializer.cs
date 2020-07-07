@@ -15,9 +15,9 @@ namespace Meditation
 
         // Point in time that this class was initialised.
         FieldInfo m_lastUpdateTime = typeof(CharacterStats).GetField("m_lastUpdateTime", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
+        
         // Current spell (for sitting check).
-        FieldInfo m_currentSpellCastType = typeof(Character).GetField("m_currentSpellCastType", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        FieldInfo m_currentSpellCastType = typeof(Character).GetField("temp_m_currentSpellCastType", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
         // Character reference.
         FieldInfo m_character = typeof(CharacterStats).GetField("m_character", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
@@ -58,7 +58,6 @@ namespace Meditation
         {
             bool burntRegenEnabled = gameData.BurntStaminaRegen != 0 || gameData.BurntHealthRegen != 0 || gameData.BurntManaRegen != 0;
             bool currentRegenEnabled = gameData.CurrentStaminaRegen != 0 || gameData.CurrentHealthRegen != 0 || gameData.CurrentManaRegen != 0;
-            
             if (burntRegenEnabled || currentRegenEnabled)
             {
                 // Get the player.
@@ -67,6 +66,7 @@ namespace Meditation
                 // Apply regen if we're sitting.
                 if ((Character.SpellCastType)m_currentSpellCastType.GetValue(character) == Character.SpellCastType.Sit)
                 {
+                    
                     if (burntRegenEnabled)
                     {
                         applyBurntRegen(instance);
@@ -78,8 +78,10 @@ namespace Meditation
                 }
             }
             
+
             // Call the hooked function with the overridden player stats.
-            original.Invoke(instance);
+            
+           original.Invoke(instance);
         }
 
         /// <summary>
@@ -139,12 +141,29 @@ namespace Meditation
         /// Loads the GameData from the configuration file located within the mods folder.
         /// </summary>
         /// <returns>Populated GameData.</returns>
+        /// using (StreamReader streamReader = new StreamReader("BepInEx/plugins/MeditationConfig.json"))
         public GameData LoadSettings()
         {
+            string PathChecker = "BepInEx/plugins/MeditationConfig.json";
+
+            if (File.Exists("BepInEx/plugins/MeditationConfig.json"))
+            {
+                PathChecker = "BepInEx/plugins/MeditationConfig.json";
+            }
+            else if (File.Exists("Mods/MeditationConfig.json"))
+            {
+                PathChecker = "Mods/MeditationConfig.json";
+            }
+            else
+            {
+                Debug.Log((object)"File Not Found Exception");
+                return (GameData)null;
+            }
+
             try
             {
                 // Read the configuration file (path is relative to exe dir).
-                using (StreamReader streamReader = new StreamReader("Mods/MeditationConfig.json"))
+                using (StreamReader streamReader = new StreamReader(PathChecker))
                 {
                     try
                     {
@@ -174,8 +193,8 @@ namespace Meditation
                 Debug.Log("Meditation exception: " + ex.Message);
             }
 
-            // If it's made it this far something is wrong, return null.
             return (GameData)null;
         }
     }
 }
+

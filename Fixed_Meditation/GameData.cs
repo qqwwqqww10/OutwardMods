@@ -18,3 +18,4 @@ namespace Meditation
         public float CurrentManaRegen;
     }
 }
+
